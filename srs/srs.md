@@ -10,7 +10,7 @@
 ## 1. Introduction
 
 ### 1.1 Purpose and Scope
-The purpose of this document is to outline the Software Requirements Specification for the BK Restaurant Management System. This system aims to digitize and centralize operations across three branches, replacing manual WhatsApp orders, physical books, and verbal communications with a unified digital platform. The scope includes Online Ordering, a Kitchen Display System (KDS), Delivery Tracking, Inventory Management, and Employee Management.
+The purpose of this document is to outline the Software Requirements Specification for the BK Restaurant Management System. This system aims to digitize and centralize operations across three branches, replacing manual WhatsApp orders, physical books, and verbal communications with a unified digital platform. The scope includes a Kitchen Display System (KDS), Delivery Tracking, Inventory Management, and Employee Management.
 
 ### 1.2 Definitions, Acronyms, Abbreviations
 * **SRS**: Software Requirements Specification
@@ -36,7 +36,7 @@ The primary goals of the BK Restaurant Management System are to:
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-The BK Restaurant Management System is a comprehensive, standalone system consisting of a web-based management dashboard, a POS interface for cashiers, a KDS for kitchen staff, an online ordering portal for customers, and a mobile application for delivery riders.
+The BK Restaurant Management System is a comprehensive, standalone system consisting of a web-based management dashboard, a POS interface for cashiers, a KDS for kitchen staff, and a mobile application for delivery riders.
 
 ### 2.2 User Classes and Characteristics
 * **Restaurant Owner**: Needs high-level visibility across all branches.
@@ -44,7 +44,7 @@ The BK Restaurant Management System is a comprehensive, standalone system consis
 * **Cashier**: Needs a fast POS system to input orders quickly.
 * **Kitchen Staff**: Needs clear, readable digital tickets to prepare food without verbal miscommunications.
 * **Delivery Rider**: Needs a mobile interface with GPS navigation to deliver orders.
-* **Customer**: Needs an intuitive interface to place and track orders.
+* **Customer**: Places external delivery/takeaway orders via phone or WhatsApp.
 
 ### 2.3 Operating Environment
 * Web interfaces will run on modern web browsers (Chrome, Safari, Firefox).
@@ -69,7 +69,7 @@ The BK Restaurant Management System is a comprehensive, standalone system consis
 ### 3.3 System Analysis Diagrams
 * **Use Case Diagram**: `diagrams/exports/use_case_diagram.svg`
 * **Activity Diagrams**: 
-  - Place Online Order: `diagrams/exports/act-UC-01.svg`
+  - Log In and Access Role-Based Features: `diagrams/exports/act-UC-01.svg`
   - Process Walk-in Order: `diagrams/exports/act-UC-03.svg`
   - View & Update Order (KDS): `diagrams/exports/act-UC-04.svg`
   - Update Delivery Status: `diagrams/exports/act-UC-05.svg`
