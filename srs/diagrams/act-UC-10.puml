@@ -1,0 +1,27 @@
+@startuml
+title Activity Diagram: UC-10 Manage Local Inventory
+
+|Manager|
+start
+:Navigate to 'Inventory Management';
+
+|System|
+:Display current stock levels;
+
+|Manager|
+:Perform manual physical stock count;
+if (Physical Count == System Count?) then ([Yes])
+  :Approve current count;
+else ([No])
+  :Enter stock adjustment into system;
+  |System|
+  :Prompt for adjustment reason;
+  |Manager|
+  :Log adjustment reason (e.g. Spoilage);
+endif
+
+|System|
+:Save updated inventory records;
+:Log timestamp and manager ID;
+stop
+@enduml

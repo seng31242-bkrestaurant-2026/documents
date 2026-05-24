@@ -1,0 +1,43 @@
+@startuml
+title Activity Diagram: UC-02 Create Customer Orders
+
+|Cashier|
+start
+:Initiate new order;
+:Select order type (Dine-in, Takeaway, Delivery);
+:Add menu items;
+
+|System|
+if (Item out of stock?) then ([Yes])
+  :Display out of stock alert;
+  |Cashier|
+  :Inform customer & remove item;
+else ([No])
+endif
+
+|System|
+:Calculate total;
+
+  |Cashier|
+  repeat
+    :Request payment from customer;
+    if (Customer refuses to pay?) then ([Yes])
+      :Cancel order draft;
+      stop
+    else ([No])
+      :Process payment;
+      |System|
+    endif
+  repeat while (Payment Successful?) is ([No]) not ([Yes])
+
+  |System|
+  :Save order to Database;
+  :Update inventory allocation;
+
+  |Kitchen|
+  :Display new order on KDS;
+
+  |Cashier|
+  :Provide receipt to customer;
+stop
+@enduml

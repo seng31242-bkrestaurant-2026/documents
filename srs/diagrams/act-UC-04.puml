@@ -1,0 +1,40 @@
+@startuml
+title Activity Diagram: UC-04 Update Order Status
+
+|Kitchen|
+start
+:View pending orders on KDS;
+:Select an order to start;
+:Change status to 'Preparing';
+
+|System|
+:Update status to 'Preparing';
+
+|Kitchen|
+:Prepare food items;
+if (Issue during preparation?) then ([Yes - Missing ingredient])
+  :Mark order as 'Issue';
+  |System|
+  :Alert Cashier;
+  |Cashier|
+  :Inform Customer;
+  :Invoke UC-03 (Cancel & Refund);
+  stop
+else ([No])
+  |Kitchen|
+  :Finish food preparation;
+  :Change status to 'Ready';
+  
+  |System|
+  :Update status to 'Ready';
+  :Notify Cashier / Rider;
+  
+  |Cashier / Rider|
+  :Hand over food to customer/rider;
+  :Change status to 'Completed / Dispatched';
+  
+  |System|
+  :Archive order;
+endif
+stop
+@enduml
