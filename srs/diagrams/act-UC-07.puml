@@ -1,0 +1,36 @@
+@startuml
+title Activity Diagram: UC-07 Receive Delivery Assignments
+
+|System|
+start
+:Identify a 'Ready' delivery order;
+
+while (Available Riders > 0?) is ([Yes])
+  |System|
+  :Assign order to nearest available rider;
+  
+  |Rider|
+  :Receive notification on mobile app;
+  if (Accept assignment?) then ([Yes])
+    |Rider|
+    :Tap 'Accept';
+    |System|
+    :Update order status to 'Dispatched';
+    stop
+  else ([No])
+    |Rider|
+    :Tap 'Reject';
+    |System|
+    :Re-queue order;
+  endif
+endwhile ([No])
+
+|System|
+:Display 'No Riders Available' alert;
+:Notify Kitchen to Pause Preparation;
+
+|Manager|
+:Manually delay order or call 3rd party;
+
+stop
+@enduml

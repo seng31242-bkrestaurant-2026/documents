@@ -1,0 +1,24 @@
+@startuml
+title Activity Diagram: UC-09 Monitor Delivery Progress
+
+|Owner|
+start
+:Navigate to 'Delivery Tracking' dashboard;
+
+split
+  :Select a specific rider on map;
+  |System|
+  :Display detailed order info popup;
+split again
+  |System|
+  :Continuously poll GPS coordinates;
+  if (Rider GPS is off?) then ([Yes])
+    :Display last known location;
+    :Show GPS Warning Icon;
+  else ([No])
+    :Overlay live rider locations on map;
+    :Update estimated delivery times;
+  endif
+end split
+stop
+@enduml
