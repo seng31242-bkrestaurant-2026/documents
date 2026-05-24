@@ -1,0 +1,49 @@
+@startuml
+title Activity Diagram: UC-03 Modify and Cancel Orders
+
+|Cashier|
+start
+:Search for active order;
+
+|System|
+:Display order details;
+
+|Cashier|
+if (Order status is Dispatched/Completed?) then ([Yes])
+  |System|
+  :Deny modification;
+  stop
+else ([No])
+endif
+
+|Cashier|
+:Select 'Modify' or 'Cancel';
+if (Selection?) then ([Modify])
+  :Make changes to items;
+  |System|
+  :Recalculate totals;
+  if (New total > Old total?) then ([Yes])
+    |Cashier|
+    :Collect difference;
+  else ([No])
+    |Cashier|
+    :Refund difference;
+  endif
+  |System|
+  :Update order status;
+  :Log the change;
+  stop
+else ([Cancel])
+  |Cashier|
+  :Confirm cancellation;
+  |System|
+  if (Order Paid?) then ([Yes])
+    |Cashier|
+    :Process full refund;
+  end if
+  |System|
+  :Update order status;
+  :Log the change;
+  stop
+endif
+@enduml
