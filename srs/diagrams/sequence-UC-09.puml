@@ -1,0 +1,23 @@
+@startuml
+
+actor Owner
+
+participant " Owner Dashboard" as Dashboard
+participant "BK System" as System
+participant " GPS Service" as GPSService
+
+Owner -> Dashboard : openDeliveryTracking()
+
+Dashboard -> System : requestActiveRiders()
+
+System -> GPSService : fetchRiderCoordinates(riderIDs)
+GPSService --> System : coordinates(riderID, lat, lng)
+
+System --> Dashboard : overlayRidersOnMap(coordinates, ETA)
+
+Owner -> Dashboard : selectRider(riderID)
+
+Dashboard -> System : getRiderOrderDetails(riderID)
+System --> Dashboard : displayOrderInfo(orderID, status, ETA)
+
+@enduml
