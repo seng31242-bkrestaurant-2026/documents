@@ -1,0 +1,22 @@
+@startuml
+
+actor "Branch Manager" as Manager
+
+participant " BK System" as System
+database " Database" as DB
+
+Manager -> System : openInventoryManagement()
+
+System -> DB : fetchCurrentStockLevels()
+DB --> System : stockData()
+
+System --> Manager : displayStockLevels()
+
+Manager -> System : enterStockAdjustment(itemID, quantity, reason)
+
+System -> DB : saveInventoryUpdate(itemID, quantity, reason, managerID)
+DB --> System : updateConfirmed()
+
+System --> Manager : inventoryUpdated()
+
+@enduml
