@@ -1,0 +1,23 @@
+@startuml
+
+participant " BK System" as System
+database " Database" as DB
+actor "Delivery Rider" as Rider
+participant "Rider App" as RiderApp
+
+System -> DB : fetchReadyDeliveryOrders()
+DB --> System : readyOrders()
+
+System -> DB : findAvailableRider()
+DB --> System : riderID
+
+System -> RiderApp : sendAssignmentNotification(orderID, address)
+RiderApp --> Rider : displayAssignment(orderID, address)
+
+Rider -> RiderApp : acceptAssignment()
+RiderApp -> System : confirmAcceptance(orderID, riderID)
+
+System -> DB : updateOrderStatus(orderID, "Dispatched")
+DB --> System : statusUpdated()
+
+@enduml

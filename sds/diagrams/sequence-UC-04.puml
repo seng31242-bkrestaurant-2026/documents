@@ -1,0 +1,25 @@
+@startuml
+
+actor "Kitchen Staff" as KitchenStaff
+
+participant "KDS Display" as KDS
+participant " BK System" as System
+database "Database" as DB
+
+KitchenStaff -> KDS : viewActiveOrders()
+
+KDS -> System : fetchActiveOrders()
+System -> DB : getOrderQueue()
+DB --> System : orderList()
+System --> KDS : displayOrders()
+
+KitchenStaff -> KDS : selectOrder(orderID)
+KitchenStaff -> KDS : updateStatus(preparing/ready)
+
+KDS -> System : changeOrderStatus(orderID, newStatus)
+System -> DB : saveStatus(orderID, newStatus)
+DB --> System : statusUpdated()
+
+System --> KDS : refreshDisplay(orderID, newStatus)
+
+@enduml

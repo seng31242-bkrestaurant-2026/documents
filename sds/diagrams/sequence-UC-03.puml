@@ -1,0 +1,35 @@
+@startuml
+
+actor Cashier
+
+participant " POS System" as POS
+database " Database" as DB
+
+Cashier -> POS : searchOrder(orderID)
+
+POS -> DB : fetchOrderDetails(orderID)
+DB --> POS : orderDetails(status)
+
+POS --> Cashier : displayOrderDetails()
+
+Cashier -> POS : selectAction(modify/cancel)
+
+alt Modify Order
+    Cashier -> POS : updateItems(newItems)
+
+    POS -> DB : recalculateTotal(orderID)
+    DB --> POS : updatedTotal()
+
+    POS -> DB : saveUpdatedOrder(orderID)
+    DB --> POS : updateConfirmed()
+
+else Cancel Order
+    Cashier -> POS : confirmCancellation()
+
+    POS -> DB : cancelOrder(orderID)
+    DB --> POS : orderCancelled()
+end
+
+POS --> Cashier : actionCompleted()
+
+@enduml

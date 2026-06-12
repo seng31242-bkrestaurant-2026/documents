@@ -1,0 +1,27 @@
+@startuml
+
+actor Cashier
+
+participant "POS System" as POS
+database "Database" as DB
+participant "KDS Display" as KDS
+
+Cashier -> POS : initiateNewOrder()
+Cashier -> POS : selectOrderType(dineIn/takeaway/delivery)
+Cashier -> POS : addMenuItems(items)
+
+POS -> DB : checkInventory(items)
+DB --> POS : stockAvailable()
+
+POS --> Cashier : displayOrderTotal()
+
+Cashier -> POS : confirmOrderAndPayment()
+
+POS -> DB : saveOrder(orderDetails)
+DB --> POS : orderSaved(orderID)
+
+POS -> KDS : notifyKitchen(orderID, items)
+
+POS --> Cashier : orderConfirmed(orderID)
+
+@enduml
