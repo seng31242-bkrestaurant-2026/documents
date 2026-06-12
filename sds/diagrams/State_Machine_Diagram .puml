@@ -1,0 +1,58 @@
+@startuml BK_Restaurant_Order_State_Machine
+title BK Restaurant Management System\nOrder State Machine Diagram
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam state {
+    BackgroundColor #EAF3DE
+    BorderColor #3B6D11
+    FontColor #173404
+}
+[*] --> OrderPlaced : Customer order received\n(Phone / WhatsApp)
+OrderPlaced --> OrderConfirmed : Cashier confirms order
+OrderPlaced --> Cancelled : Order cancelled
+OrderConfirmed --> Preparing : Kitchen starts preparation
+Preparing --> ReadyForPickup : Dine-in / Takeaway Order
+Preparing --> ReadyForDelivery : Delivery Order
+Preparing --> Cancelled : Order cancelled
+ReadyForPickup --> PaymentCompleted : Payment received
+ReadyForDelivery --> AssignedToRider : Rider assigned
+AssignedToRider --> OutForDelivery : Rider picks up order
+OutForDelivery --> Delivered : Delivery completed
+OutForDelivery --> DeliveryFailed : Customer unavailable
+DeliveryFailed --> OutForDelivery : Reattempt delivery
+DeliveryFailed --> Cancelled : Delivery cancelled
+Delivered --> PaymentCompleted : Payment verified
+PaymentCompleted --> Completed : Order closed
+Completed --> [*]
+Cancelled --> [*]
+state OrderPlaced
+state OrderConfirmed
+state Preparing
+state ReadyForPickup
+state ReadyForDelivery
+state AssignedToRider
+state OutForDelivery
+state Delivered
+state DeliveryFailed
+state PaymentCompleted
+state Completed
+state Cancelled
+note right of Preparing
+Kitchen staff prepares food.
+Inventory is updated based on
+ordered menu items.
+end note
+note right of AssignedToRider
+Delivery Service assigns
+an available rider.
+end note
+note right of PaymentCompleted
+Billing Service records
+successful payment and
+generates invoice.
+end note
+note right of Delivered
+Order successfully delivered
+to customer.
+end note
+@enduml
