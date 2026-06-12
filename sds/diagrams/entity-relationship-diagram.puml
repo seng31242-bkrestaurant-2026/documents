@@ -1,0 +1,193 @@
+@startuml
+
+class Branch {
+    +branchId : int
+    +branchName : String
+    +address : String
+    +contactNumber : String
+
+    +manageBranch()
+}
+
+class Role {
+    +roleId : int
+    +roleName : String
+}
+
+class User {
+    +userId : int
+    +fullName : String
+    +email : String
+    +phone : String
+    +username : String
+    +passwordHash : String
+    +status : String
+
+    +login()
+    +logout()
+    +updateProfile()
+}
+
+class Customer {
+    +customerId : int
+    +fullName : String
+    +phone : String
+    +address : String
+
+    +placeOrder()
+    +viewOrderHistory()
+}
+
+class MenuItem {
+    +itemId : int
+    +itemName : String
+    +price : decimal
+    +category : String
+    +availability : boolean
+
+    +updatePrice()
+    +updateAvailability()
+}
+
+class Order {
+    +orderId : int
+    +orderType : String
+    +totalAmount : decimal
+    +orderStatus : String
+    +createdAt : DateTime
+
+    +createOrder()
+    +updateOrder()
+    +cancelOrder()
+    +calculateTotal()
+}
+
+class OrderItem {
+    +orderItemId : int
+    +quantity : int
+    +unitPrice : decimal
+    +subtotal : decimal
+
+    +calculateSubtotal()
+}
+
+class Invoice {
+    +invoiceId : int
+    +invoiceNumber : String
+    +totalAmount : decimal
+    +generatedAt : DateTime
+
+    +generateInvoice()
+    +printInvoice()
+}
+
+class Delivery {
+    +deliveryId : int
+    +deliveryStatus : String
+    +assignedAt : DateTime
+    +deliveredAt : DateTime
+
+    +assignRider()
+    +updateStatus()
+}
+
+class DeliveryTracking {
+    +trackingId : int
+    +latitude : decimal
+    +longitude : decimal
+    +trackedAt : DateTime
+
+    +updateLocation()
+}
+
+class InventoryItem {
+    +inventoryId : int
+    +itemName : String
+    +quantity : int
+    +minimumLevel : int
+
+    +updateStock()
+    +checkLowStock()
+}
+
+class StockRequest {
+    +requestId : int
+    +quantity : int
+    +status : String
+    +requestDate : DateTime
+
+    +createRequest()
+    +approveRequest()
+    +rejectRequest()
+}
+
+class Supplier {
+    +supplierId : int
+    +supplierName : String
+    +phone : String
+    +email : String
+
+    +supplyStock()
+}
+
+class Attendance {
+    +attendanceId : int
+    +clockIn : DateTime
+    +clockOut : DateTime
+
+    +recordAttendance()
+}
+
+class Shift {
+    +shiftId : int
+    +shiftDate : Date
+    +startTime : Time
+    +endTime : Time
+
+    +assignShift()
+}
+
+class LeaveRequest {
+    +leaveId : int
+    +startDate : Date
+    +endDate : Date
+    +reason : String
+    +status : String
+
+    +submitRequest()
+    +approveRequest()
+    +rejectRequest()
+}
+
+'================ RELATIONSHIPS ================
+
+Role "1" -- "0..*" User : assignedTo
+
+Branch "1" -- "0..*" User : employs
+Branch "1" -- "0..*" Order : receives
+Branch "1" -- "0..*" InventoryItem : maintains
+
+Customer "1" -- "0..*" Order : places
+
+User "1" -- "0..*" Order : creates
+
+Order "1" *-- "1..*" OrderItem : contains
+MenuItem "1" -- "0..*" OrderItem : includedIn
+
+Order "1" -- "1" Invoice : generates
+
+Order "1" -- "0..1" Delivery : has
+User "1" -- "0..*" Delivery : assignedAsRider
+
+Delivery "1" -- "0..*" DeliveryTracking : trackedBy
+
+InventoryItem "1" -- "0..*" StockRequest : requestedFor
+Supplier "1" -- "0..*" StockRequest : fulfills
+User "1" -- "0..*" StockRequest : creates
+
+User "1" -- "0..*" Attendance : records
+User "1" -- "0..*" Shift : works
+User "1" -- "0..*" LeaveRequest : submits
+
+@enduml
+
