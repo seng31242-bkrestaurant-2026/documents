@@ -1,0 +1,253 @@
+@startuml BK_Restaurant_Component_Diagram_Final
+
+title BK Restaurant Management System\nComponent Diagram 
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam component {
+    BackgroundColor #EAF3DE
+    BorderColor #3B6D11
+    FontColor #173404
+    FontSize 11
+}
+skinparam package {
+    BackgroundColor #F1EFE8
+    BorderColor #888780
+    FontColor #2C2C2A
+    FontStyle bold
+    FontSize 12
+}
+skinparam database {
+    BackgroundColor #E6F1FB
+    BorderColor #185FA5
+    FontColor #042C53
+}
+skinparam cloud {
+    BackgroundColor #FAEEDA
+    BorderColor #854F0B
+    FontColor #412402
+}
+skinparam actor {
+    BackgroundColor #EEEDFE
+    BorderColor #534AB7
+    FontColor #26215C
+}
+skinparam arrow {
+    Color #5F5E5A
+    FontColor #5F5E5A
+    FontSize 9
+}
+skinparam note {
+    BackgroundColor #FAEEDA
+    BorderColor #854F0B
+    FontColor #412402
+    FontSize 10
+}
+
+' ─────────────────────────────────────────────
+'  ACTORS
+' ─────────────────────────────────────────────
+actor "Restaurant Owner"  as OWNER
+actor "Branch Manager"    as MGR
+actor "Cashier"           as CASHIER
+actor "Kitchen Staff"     as KITCHEN
+actor "Delivery Rider"    as RIDER
+actor "Customer"          as CUSTOMER
+actor "Supplier"          as SUPPLIER
+
+' ─────────────────────────────────────────────
+'  FRONTEND LAYER
+' ─────────────────────────────────────────────
+package "Client Layer (Frontend)" {
+
+    package "Web Application (React.js + Tailwind CSS)" {
+        [POS Module\n(UC-02, UC-03, UC-04, UC-05)]              as POS
+        [Kitchen Display System (KDS)\n(UC-04, FR-03)]           as KDS
+        [Inventory Management UI\n(UC-10, UC-11, UC-12)]         as INV_UI
+        [Employee Management UI\n(UC-13, UC-14)]                 as EMP_UI
+        [Delivery Tracking Dashboard\n(UC-09, FR-07)]            as DELIV_UI
+        [Analytics Dashboard\n(UC-15, FR-15, FR-16)]             as ANALYTICS_UI
+        [Auth / Login UI\n(UC-01, FR-17, FR-18)]                 as AUTH_UI
+    }
+
+    package "Mobile Application (Flutter)" {
+        [Rider App\n(UC-07, UC-08, FR-06, FR-08)]               as MOBILE
+    }
+}
+
+' ─────────────────────────────────────────────
+'  API GATEWAY
+' ─────────────────────────────────────────────
+component [API Gateway\n(REST API — Node.js / Express.js)\nJWT Auth · Rate Limiting · Routing] as GW
+
+' ─────────────────────────────────────────────
+'  BACKEND SERVICE LAYER
+' ─────────────────────────────────────────────
+package "Service Layer (Backend — Node.js / Express.js)" {
+    [Auth Service\n(JWT — FR-17, FR-18)]                        as AUTH
+    [Order Service\n(FR-01, FR-03, FR-04)]                      as ORDER
+    [Billing Service\n(FR-02, UC-05)]                           as BILLING
+    [Inventory Service\n(FR-09, FR-10, FR-11)]                  as INVENTORY
+    [Delivery Service\n(FR-05, FR-07, FR-08)]                   as DELIVERY
+    [Employee Service\n(FR-12, FR-13, FR-14)]                   as EMPLOYEE
+    [Reporting / Analytics Service\n(FR-15, FR-16)]             as ANALYTICS
+    [Notification Service\n(FR-10, FR-11, FR-13)]               as NOTIFY
+    [Supplier Management Service\n(UC-12, Supplier Requests)] as SUPPLIER_SVC
+    [Branch Management Service\n(Multi-Branch Operations)] as BRANCH
+}
+
+' ─────────────────────────────────────────────
+'  DATA LAYER
+' ─────────────────────────────────────────────
+package "Data Layer" {
+   database "Restaurant Database\n(PostgreSQL / MySQL)\nAWS / Railway.app" as DB
+    database "Local Cache\n(Redis / In-Memory)\nOffline Fallback" as CACHE
+}
+
+' ─────────────────────────────────────────────
+'  EXTERNAL SERVICES
+' ─────────────────────────────────────────────
+package "External Services" {
+    cloud "GPS / Mapping API\n(Google Maps — FR-07)" as GPS
+    cloud "SMS / Email\nNotification Service"         as MSG
+    cloud "Payment Gateway"                           as PAYMENT
+}
+
+' ═════════════════════════════════════════════
+'  ACTOR → FRONTEND
+' ═════════════════════════════════════════════
+
+' Restaurant Owner
+OWNER   --> ANALYTICS_UI : views analytics\n& multi-branch data (UC-15)
+OWNER   --> DELIV_UI     : monitors deliveries (UC-09)
+OWNER   --> AUTH_UI      : logs in (UC-01)
+
+' Branch Manager — FIX: direct links to Inventory UI & Employee UI
+MGR     --> POS          : manages orders
+MGR     --> INV_UI       : manages inventory\n& stock requests (UC-10, UC-11, UC-12)
+MGR     --> EMP_UI       : manages shifts\n& attendance (UC-13, UC-14)
+MGR     --> AUTH_UI      : logs in (UC-01)
+
+' Cashier
+CASHIER --> POS          : creates & bills orders (UC-02, UC-05)
+CASHIER --> AUTH_UI      : logs in (UC-01)
+
+' Kitchen Staff
+KITCHEN --> KDS          : views & updates\norder status (UC-04)
+
+' Delivery Rider
+RIDER   --> MOBILE       : receives assignments\n& updates delivery (UC-07, UC-08)
+
+' Customer — FIX: explicit path through Cashier (phone/WhatsApp model)
+CUSTOMER --> CASHIER     : places order via\nphone/WhatsApp (UC-06)
+
+' Supplier — FIX: explicit connection through Notification Service
+SUPPLIER --> GW          : reviews & confirms\nstock requests (UC-12)
+
+' ═════════════════════════════════════════════
+'  FRONTEND → API GATEWAY
+' ═════════════════════════════════════════════
+POS          --> GW : HTTPS / REST
+KDS          --> GW : HTTPS / REST
+INV_UI       --> GW : HTTPS / REST
+EMP_UI       --> GW : HTTPS / REST
+DELIV_UI     --> GW : HTTPS / REST
+ANALYTICS_UI --> GW : HTTPS / REST
+AUTH_UI      --> GW : HTTPS / REST
+MOBILE       --> GW : HTTPS / REST (mobile)
+
+' ═════════════════════════════════════════════
+'  API GATEWAY → BACKEND SERVICES
+' ═════════════════════════════════════════════
+GW --> AUTH      : authenticate &\nauthorise (JWT)
+GW --> ORDER     : order CRUD
+GW --> BILLING   : invoice ops
+GW --> INVENTORY : stock ops
+GW --> DELIVERY  : delivery ops
+GW --> EMPLOYEE  : HR ops
+GW --> ANALYTICS : reporting queries
+GW --> NOTIFY    : trigger notifications
+GW --> SUPPLIER_SVC : supplier operations
+GW --> BRANCH       : branch operations
+
+' ═════════════════════════════════════════════
+'  INTER-SERVICE DEPENDENCIES
+' ═════════════════════════════════════════════
+ORDER     --> INVENTORY : deduct stock\non order confirm
+ORDER     --> DELIVERY  : create delivery task
+ORDER     --> BILLING   : trigger invoice
+ANALYTICS --> ORDER     : aggregate sales data
+ANALYTICS --> INVENTORY : aggregate stock data
+ANALYTICS --> EMPLOYEE  : aggregate attendance
+INVENTORY --> NOTIFY    : low-stock alert (FR-10)
+EMPLOYEE  --> NOTIFY    : shift notification (FR-13)
+INVENTORY    --> SUPPLIER_SVC : create stock request
+SUPPLIER_SVC --> NOTIFY       : send supplier notification
+
+ANALYTICS --> BRANCH : branch analytics
+DELIVERY  --> BRANCH : branch assignment
+
+' ═════════════════════════════════════════════
+'  SERVICES → DATA LAYER
+' ═════════════════════════════════════════════
+AUTH         --> DB : user data
+ORDER        --> DB : orders
+BILLING      --> DB : billing records
+INVENTORY    --> DB : inventory data
+DELIVERY     --> DB : delivery data
+EMPLOYEE     --> DB : employee data
+ANALYTICS    --> DB : reports & analytics
+NOTIFY       --> DB : notification logs
+SUPPLIER_SVC --> DB : supplier requests
+BRANCH       --> DB : branch information
+
+ORDER     --> CACHE        : offline order buffer\n(SRS §2.4)
+INVENTORY --> CACHE        : offline stock cache\n(SRS §2.4)
+
+' ═════════════════════════════════════════════
+'  SERVICES → EXTERNAL SERVICES
+' ═════════════════════════════════════════════
+DELIVERY --> GPS     : request live GPS coords (FR-07)
+NOTIFY   --> MSG     : send SMS / email alerts
+BILLING --> PAYMENT : card / online payment
+
+' ═════════════════════════════════════════════
+'  NOTES
+' ═════════════════════════════════════════════
+note right of GW
+  Single entry point for all HTTP requests.
+  Handles: JWT token validation, rate limiting,
+  request routing, and CORS.
+  All frontend clients (web + mobile) connect here.
+end note
+
+note right of CACHE
+  Redis / in-memory cache supports offline mode
+  for Kahawa & Ambalangoda branches with poor
+  internet connectivity (SRS §2.4).
+  Automatically syncs with DB on reconnection.
+end note
+
+note bottom of DB
+  Central database shared across all branches.
+  Supports Ambalangoda Branch 01,
+  Ambalangoda Branch 02 and Kahawa Branch.
+  Hosted on AWS / Railway.app cloud platform.
+end note
+
+
+note right of CUSTOMER
+  Customer places orders via phone or WhatsApp.
+  Cashier enters order into system on their behalf.
+  (UC-06 — no direct system login for customer)
+end note
+
+note left of SUPPLIER
+  Supplier receives stock request notification
+  via SMS/Email (UC-12). Logs into system to
+  confirm or reject the stock request.
+end note
+
+
+@enduml
