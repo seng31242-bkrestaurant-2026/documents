@@ -1,23 +1,25 @@
 @startuml
 
-actor Owner
+participant " BK System" as System
+database "️ Database" as DB
+actor "Branch Manager" as Manager
+actor "Supplier" as Supplier
 
-participant " Owner Dashboard" as Dashboard
-participant "BK System" as System
-participant " GPS Service" as GPSService
+System -> DB : checkStockLevels()
+DB --> System : itemsBelowThreshold(items)
 
-Owner -> Dashboard : openDeliveryTracking()
+System -> Manager : sendLowStockAlert(items)
+Manager -> System : acknowledgeAlert(itemID)
 
-Dashboard -> System : requestActiveRiders()
+Manager -> System : createStockRequest(itemID, quantity)
+System -> DB : saveStockRequest(requestDetails)
 
-System -> GPSService : fetchRiderCoordinates(riderIDs)
-GPSService --> System : coordinates(riderID, lat, lng)
+System -> Supplier : sendStockRequest(items, quantities)
+Supplier -> System : approveAndDispatch(requestID)
 
-System --> Dashboard : overlayRidersOnMap(coordinates, ETA)
+System -> DB : updateInventory(itemID, quantity)
+DB --> System : inventoryUpdated()
 
-Owner -> Dashboard : selectRider(riderID)
-
-Dashboard -> System : getRiderOrderDetails(riderID)
-System --> Dashboard : displayOrderInfo(orderID, status, ETA)
+System --> Manager : stockRequestFulfilled(requestID)
 
 @enduml
