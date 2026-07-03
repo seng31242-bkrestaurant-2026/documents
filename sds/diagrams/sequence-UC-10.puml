@@ -1,22 +1,23 @@
 @startuml
 
-actor "Branch Manager" as Manager
-
+actor "Owner" as Owner
+participant "Owner Dashboard" as Dashboard
 participant " BK System" as System
 database " Database" as DB
 
-Manager -> System : openInventoryManagement()
+Owner -> Dashboard : openAnalyticsDashboard()
 
-System -> DB : fetchCurrentStockLevels()
-DB --> System : stockData()
+Dashboard -> System : requestBranchData()
+System -> DB : aggregateAllBranchData(sales, inventory, delivery)
+DB --> System : aggregatedMetrics()
+System --> Dashboard : displayCharts(sales, inventory, delivery)
 
-System --> Manager : displayStockLevels()
+Owner -> Dashboard : applyFilters(dateRange, branchID)
+Dashboard -> System : refetchFilteredData(filters)
+System -> DB : queryFilteredMetrics(filters)
+DB --> System : filteredData()
+System --> Dashboard : updateDashboard(filteredData)
 
-Manager -> System : enterStockAdjustment(itemID, quantity, reason)
-
-System -> DB : saveInventoryUpdate(itemID, quantity, reason, managerID)
-DB --> System : updateConfirmed()
-
-System --> Manager : inventoryUpdated()
+Dashboard --> Owner : updatedChartsAndTables()
 
 @enduml
